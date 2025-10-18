@@ -1,0 +1,37 @@
+# =====================
+# Django / Python
+# =====================
+*.pyc
+*.pyo
+__pycache__/
+env/
+venv/
+*.sqlite3
+*.log
+*.pot
+*.py[cod]
+*.swp
+*.DS_Store
+*.env
+/staticfiles/
+/media/
+
+# =====================
+# Node / Vue
+# =====================
+node_modules/
+dist/
+npm-debug.log*
+
+# =====================
+# VSCode / IDE
+# =====================
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# =====================
+# Misc
+# =====================
+.DS_Store

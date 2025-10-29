@@ -7,6 +7,7 @@ import HomePage from './pages/HomePage.vue'
 import AccountPage from './pages/AccountPage.vue'
 import ExercisesPage from './pages/ExercisesPage.vue'
 import BuildPlan from './pages/BuildPlan.vue'
+import EditPlan from './pages/EditPlan.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -14,7 +15,8 @@ const router = createRouter({
         { path: '/', component: HomePage },
         { path: '/account', component: AccountPage },
         { path: '/exercises', component: ExercisesPage },
-        { path: '/build-plan', component: BuildPlan }
+        { path: '/build-plan', component: BuildPlan },
+        { path: '/edit-plan', component: EditPlan }
     ]
 })
 

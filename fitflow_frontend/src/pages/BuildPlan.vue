@@ -144,14 +144,14 @@
 
                     <p v-for="(exercise) in addedExercises[category]">
                         {{ exercise.name }}
-                        Weight: <input type="number" v-model="exercise.weight"/>
+                        Weight: <input type="number" v-model="exercise.weightStr"/>
                         Weight Unit: 
-                        <select v-model="exercise.weightUnit" name="weightUnit" id="weightUnit" :key="exercise">
+                        <select v-model="exercise.weightUnitStr" name="weightUnit" id="weightUnit" :key="exercise">
                             <option value="kilograms (kg)">kg</option>
                             <option value="pounds (lbs)">lbs</option>
                         </select>
-                        Sets: <input type="number" v-model="exercise.sets" required/>
-                        Reps: <input type="number" v-model="exercise.reps" required/>
+                        Sets: <input type="number" v-model="exercise.setsStr" required/>
+                        Reps: <input type="number" v-model="exercise.repsStr" required/>
                     </p>
                     
                 </li>
@@ -168,18 +168,17 @@
 
                     <p v-for="(exercise) in addedExercises[category]">
                         {{ exercise.name }}
-                        Time: <input type="time" v-model="exercise.time" required step="1"/>
-                        Distance: <input type="number" v-model="exercise.distance" required/>
+                        Time: <input type="time" v-model="exercise.timeCar" required step="1"/>
+                        Distance: <input type="number" v-model="exercise.distanceCar" required/>
                         Distance Unit: 
-                        <select v-model="exercise.distanceUnit" name="distanceUnit" id="distanceUnit" :key="exercise">
+                        <select v-model="exercise.distanceUnitCar" name="distanceUnit" id="distanceUnit" :key="exercise">
                             <option value="miles">mi</option>
                             <option value="kilometers">km</option>
                             <option value="meters">m</option>                
                         </select>
-                        Incline: <input type="number" v-model="exercise.incline" required/>
-                        Incline Level: <input type="number" v-model="exercise.inclineUnit" required />
-                        Speed: <input type="number" v-model="exercise.speed" required/>
-                        Speed Unit: <select v-model="exercise.speedUnit" name="speedUnit" id="speedUnit" :key="exercise">
+                        Incline: <input type="number" v-model="exercise.inclineCar" required/>
+                        Speed: <input type="number" v-model="exercise.speedCar" required/>
+                        Speed Unit: <select v-model="exercise.speedUnitCar" name="speedUnit" id="speedUnit" :key="exercise">
                             <option value="mph">mph</option>
                             <option value="km/h">km/h</option>
                             <option value="min/mile">min/mile</option>  
@@ -199,11 +198,11 @@
                 <li v-for="category in Object.keys(addedExercises).filter(c => c === 'mobility')"  :key="category">
                     <p v-for="(exercise) in addedExercises[category]">
                         {{ exercise.name }}
-                        Duration: <input type="time" v-model="exercise.duration" required step="1"/>
-                        Sets: <input type="number" v-model="exercise.sets" required/>
-                        Reps: <input type="number" v-model="exercise.reps" required/>
+                        Duration: <input type="time" v-model="exercise.durationMob" required step="1"/>
+                        Sets: <input type="number" v-model="exercise.setsMob" required/>
+                        Reps: <input type="number" v-model="exercise.repsMob" required/>
                         Intensity: 
-                        <select v-model="exercise.intensity" name="intensity" id="intensity" :key="exercise">
+                        <select v-model="exercise.intensityMob" name="intensity" id="intensity" :key="exercise">
                             <option value="light">light</option>
                             <option value="moderate">moderate</option>
                             <option value="intense">intense</option>
@@ -222,7 +221,7 @@
     
             <p v-for="category in Object.keys(addedExercises).filter(c => c !== 'cardio' && c !== 'mobility')" :key="category">
                 <p v-for="(exercise) in addedExercises[category]">
-                    {{ exercise.exerciseId }} - {{ exercise.name }} - weight: {{ exercise.weight }} {{ exercise.weightUnit }} - {{ exercise.sets }} x {{ exercise.reps }}
+                    {{ exercise.exerciseId }} - {{ exercise.name }} - weight: {{ exercise.weightStr }} {{ exercise.weightUnitStr }} - {{ exercise.setsStr }} x {{ exercise.repsStr }}
                 </p>
             </p>
 
@@ -230,7 +229,7 @@
 
             <p v-for="category in Object.keys(addedExercises).filter(c => c === 'cardio')" :key="category">
                 <p v-for="(exercise) in addedExercises[category]">
-                    {{ exercise.exerciseId }} - {{ exercise.name }} - time: {{ exercise.time }} - distance: {{ exercise.distance }} {{ exercise.distanceUnit }} - incline: {{ exercise.incline }} {{ exercise.inclineUnit }} - speed: {{ exercise.speed }} {{ exercise.speedUnit }}
+                    {{ exercise.exerciseId }} - {{ exercise.name }} - time: {{ exercise.timeCar }} - distance: {{ exercise.distanceCar }} {{ exercise.distanceUnitCar }} - incline: {{ exercise.inclineCar }} - speed: {{ exercise.speedCar }} {{ exercise.speedUnitCar }}
                 </p>
             </p>
             
@@ -238,20 +237,23 @@
 
             <p v-for="category in Object.keys(addedExercises).filter(c => c === 'mobility')" :key="category">
                 <p v-for="(exercise) in addedExercises[category]">
-                    {{ exercise.exerciseId }} - {{ exercise.name }} - duration: {{ exercise.duration }} - {{ exercise.sets }} x {{ exercise.reps }} - intensity: {{ exercise.intensity }}
+                    {{ exercise.exerciseId }} - {{ exercise.name }} - duration: {{ exercise.durationMob }} - {{ exercise.setsMob }} x {{ exercise.repsMob }} - intensity: {{ exercise.intensityMob }}
                 </p>
             </p>
 
             <button @click="clearSelected">Clear</button>
             <hr>
         </div>
-        <button @click="showResults">SAVE CHANGES</button>
 
+        <button @click="showResults">SAVE CHANGES</button>
+        <br>
+        <button @click="structureData">STRUCTURE</button>
     </div>
 </template>
 
 <script setup>
 import { ref, reactive, watch } from 'vue'
+import { auth } from '../utils/FirebaseConfig.js'
 
 const selectedGoals = ref([])
 const muscleGroups = ref([])
@@ -310,4 +312,75 @@ const clearSelected = () => {
     Object.keys(addedExercises).forEach(key => delete addedExercises[key])
 }
 
+const structureData = async () => {
+    const user = auth.currentUser
+
+    let category = ''
+
+    for (const muscleCategory in addedExercises) {
+        category = (muscleCategory !== 'cardio' && muscleCategory !== 'mobility') ? 'strength' : muscleCategory
+
+        await Promise.all(
+
+            addedExercises[muscleCategory].map(async (exercise) => {
+
+                let userExerciseObject = {
+                    user_email: user.email,
+                    category: category,
+                    exercise_id: exercise.exerciseId,
+                    exercise_name: exercise.name,
+                    gif_url: exercise.gifUrl,
+                    instructions: [...exercise.instructions],
+                    target_muscles: [...exercise.targetMuscles, ...exercise.secondaryMuscles]
+                }
+
+                if (category === 'strength') {
+                    userExerciseObject = {
+                        ...userExerciseObject, 
+                        weight_str: exercise.weightStr,
+                        weight_unit_str: exercise.weightUnitStr,
+                        sets_str: exercise.setsStr,
+                        reps_str: exercise.repsStr
+                    }
+
+                } else if (category === 'cardio') {
+                    userExerciseObject = {
+                        ...userExerciseObject,
+                        time_car: exercise.timeCar,
+                        distance_car: exercise.distanceCar,
+                        dist_unit_car: exercise.distanceUnitCar,
+                        incline_car: exercise.inclineCar,
+                        speed_car: exercise.speedCar,
+                        speed_unit_car: exercise.speedUnitCar
+                    }
+
+                } else if (category === 'mobility') {
+                    userExerciseObject = {
+                        ...userExerciseObject,
+                        duration_mob: exercise.durationMob,
+                        sets_mob: exercise.setsMob,
+                        reps_mob: exercise.repsMob,
+                        intensity: exercise.intensityMob
+                    }
+                }
+
+                console.log(userExerciseObject)
+
+
+                const response = await fetch('http://localhost:8000/api/exercises/', {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(userExerciseObject)
+                })
+
+                const data = await response.json()
+                console.log(data)
+
+            })
+        )
+    }
+
+}
+
 </script>
+

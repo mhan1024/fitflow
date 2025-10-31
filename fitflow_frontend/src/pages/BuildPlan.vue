@@ -245,9 +245,8 @@
             <hr>
         </div>
 
-        <button @click="showResults">SAVE CHANGES</button>
         <br>
-        <button @click="structureData">STRUCTURE</button>
+        <button @click="saveData">SAVE CHANGES</button>
     </div>
 </template>
 
@@ -304,15 +303,11 @@ const addExercise = (muscleGroup, exercise) => {
     }
 }
 
-const showResults = () => {
-    console.log(addedExercises)
-}
-
 const clearSelected = () => {
     Object.keys(addedExercises).forEach(key => delete addedExercises[key])
 }
 
-const structureData = async () => {
+const saveData = async () => {
     const user = auth.currentUser
 
     let category = ''
@@ -374,7 +369,44 @@ const structureData = async () => {
                 })
 
                 const data = await response.json()
-                console.log(data)
+
+                let exerciseProgressObject = {
+                    weight_str: data.weight_str != null ? [data.weight_str] : undefined,
+                    time_car: data.time_car != null ? [data.time_car] : undefined,
+                    distance_car: data.distance_car != null ? [data.distance_car] : undefined,
+                    incline_car: data.incline_car != null ? [data.incline_car] : undefined,
+                    speed_car: data.speed_car != null ? [data.speed_car] : undefined,
+                    duration_mob: data.duration_mob != null ? [data.duration_mob] : undefined
+                }
+
+                Object.keys(exerciseProgressObject).forEach(field => {
+                    const values = exerciseProgressObject[field];
+
+                    if (values && data.date) { 
+                        exerciseProgressObject[field] = values.map(value => ({
+                            x: data.date, 
+                            y: parseFloat(value)
+                        }))
+                    }
+                })
+
+                exerciseProgressObject = {
+                    ...exerciseProgressObject,
+                    user: data.user,
+                    user_exercise: data.id,
+                    weight_unit_str: data.weight_unit_str,
+                    dist_unit_car: data.dist_unit_car,
+                    speed_unit_car: data.speed_unit_car
+                }
+
+                const progressResponse = await fetch('http://localhost:8000/api/progress/', {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(exerciseProgressObject)
+                })
+
+                const data2 = await progressResponse.json()
+                console.log("RESPONSE 2: ", data2)
 
             })
         )

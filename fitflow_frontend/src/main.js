@@ -5,18 +5,18 @@ import './style.css'
 import App from './App.vue'
 import HomePage from './pages/HomePage.vue'
 import AccountPage from './pages/AccountPage.vue'
-import ExercisesPage from './pages/ExercisesPage.vue'
 import BuildPlan from './pages/BuildPlan.vue'
 import EditPlan from './pages/EditPlan.vue'
+import ProgressPage from './pages/ProgressPage.vue'
 
 const router = createRouter({
     history: createWebHistory(),
     routes: [
         { path: '/', component: HomePage },
         { path: '/account', component: AccountPage },
-        { path: '/exercises', component: ExercisesPage },
         { path: '/build-plan', component: BuildPlan },
-        { path: '/edit-plan', component: EditPlan }
+        { path: '/edit-plan', component: EditPlan },
+        { path: '/progress', component: ProgressPage }
     ]
 })
 

@@ -1,16 +1,20 @@
 from .models import UserExercises
+from users.models import CustomUser
 from .serializer import UserExercisesSerializer
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from django.http import JsonResponse
 
-import json
 # Create your views here.
 
 class UserExercisesViewSet(viewsets.ModelViewSet):
     queryset = UserExercises.objects.all()
     serializer_class = UserExercisesSerializer
     
+    def perform_create(self, serializer):
+        user_email = self.request.data.get('user_email')
+        user = CustomUser.objects.get(email=user_email)
+        serializer.save(user=user)
     
     # Get exercises by email
     # http://localhost:8000/api/exercises/by-email/?user_email=EMAIL
@@ -22,7 +26,8 @@ class UserExercisesViewSet(viewsets.ModelViewSet):
             return JsonResponse({"error": "email parameter is required"})
         
         try:
-            exercises = UserExercises.objects.filter(user_email=email)
+            user = CustomUser.objects.get(email=email)
+            exercises = UserExercises.objects.filter(user=user)
             
             if not exercises.exists():
                 return JsonResponse({"error": "no exercises found for user"})
@@ -32,5 +37,5 @@ class UserExercisesViewSet(viewsets.ModelViewSet):
         
         except Exception as e:
             return JsonResponse({"error": e}, status=status.HTTP_404_NOT_FOUND)
-        
+    
         

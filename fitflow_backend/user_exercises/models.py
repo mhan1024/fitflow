@@ -4,7 +4,7 @@ import datetime
 # Create your models here.
 class UserExercises(models.Model):
     # Foreign key reference to users table ? 
-    user_email = models.EmailField()
+    user = models.ForeignKey('users.CustomUser', on_delete=models.CASCADE)
     
     # basic exercise details
     # strength, cardio, mobility

@@ -4,11 +4,11 @@
     <br>
     <router-link to="/account">ACCOUNT</router-link>
     <br>
-    <router-link to="/exercises">EXERCISES</router-link>
-    <br>
     <router-link to="/build-plan">BUILD PLAN</router-link>
     <br>
     <router-link to="/edit-plan">EDIT PLAN</router-link>
+    <br>
+    <router-link to="/progress">PROGRESS</router-link>
 
     <router-view></router-view>
   </div>
@@ -17,9 +17,9 @@
 <script setup>
   import HomePage from './pages/HomePage.vue'
   import AccountPage from './pages/AccountPage.vue'
-  import ExercisesPage from './pages/ExercisesPage.vue'
   import BuildPlan from './pages/BuildPlan.vue'
   import EditPlan from './pages/EditPlan.vue'
+  import ProgressPage from './pages/ProgressPage.vue'
 </script>
 
 

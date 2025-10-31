@@ -5,3 +5,6 @@ class UserExercisesSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserExercises
         fields = '__all__'
+        extra_kwargs = {
+            'user': {'required': False}  
+        }
